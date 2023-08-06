@@ -6,7 +6,7 @@ public class MouseController : MonoBehaviour
 {   
     private static MouseController _instance;
 
-    [SerializeField, Tooltip("The layer the on whihc mouse registers input, which should only be the ground")]
+    [SerializeField, Tooltip("The layer the on which mouse registers input, which should only be the ground")]
     private LayerMask mousePlaneMask;
 
     void Awake() 
@@ -17,7 +17,7 @@ public class MouseController : MonoBehaviour
     public static Vector3 GetMousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out RaycastHit rayCastHit, Mathf.Infinity, _instance.mousePlaneMask);
-        return rayCastHit.point;
+        Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _instance.mousePlaneMask);
+        return hit.point;
     }
 }

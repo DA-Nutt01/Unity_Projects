@@ -16,6 +16,11 @@ public class Unit : MonoBehaviour
     [SerializeField, Tooltip("Animator component of this unit")]
     private Animator _unitAnimator;
 
+    void Awake() 
+    {
+        _targetPostion = transform.position; // Prevent Unit from wandering anywhere before issued a commmand
+    }
+
     void Update()
     {
         float stoppinDistance = .1f;
@@ -27,14 +32,9 @@ public class Unit : MonoBehaviour
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
             _unitAnimator.SetBool("IsWalking", true);                                                          // Animate Unit while moving
         } else _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
-        
-        if (Input.GetMouseButtonDown(0)) 
-        {
-            Move(MouseController.GetMousePosition());
-        }
     }
 
-    private void Move(Vector3 targetPosition) 
+    public void Move(Vector3 targetPosition) 
     {
         _targetPostion = targetPosition;
     }
