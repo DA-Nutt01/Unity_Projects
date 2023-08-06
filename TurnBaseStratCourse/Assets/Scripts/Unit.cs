@@ -10,6 +10,9 @@ public class Unit : MonoBehaviour
     [SerializeField, Tooltip("Multiplier for movement speed")]
     private int _moveSpeed = 4;
 
+    [SerializeField, Tooltip("Multiplier for rotating speed when unit is turning")]
+    private float _rotateSpeed = 10f;
+
     [SerializeField, Tooltip("Animator component of this unit")]
     private Animator _unitAnimator;
 
@@ -19,10 +22,11 @@ public class Unit : MonoBehaviour
 
         if (Vector3.Distance(_targetPostion, transform.position) > stoppinDistance)
         {
-            Vector3 moveDirection = (_targetPostion - transform.position).normalized; // Calculate direction to move in
-            transform.position += moveDirection * _moveSpeed * Time.deltaTime;        // Move Logic
-            _unitAnimator.SetBool("IsWalking", true);                                 // Animate Unit while moving
-        } else _unitAnimator.SetBool("IsWalking", false);                             // Update animations when no longer moving
+            Vector3 moveDirection = (_targetPostion - transform.position).normalized;                          // Calculate direction to move in
+            transform.position += moveDirection * _moveSpeed * Time.deltaTime;                                 // Move Logic
+            transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
+            _unitAnimator.SetBool("IsWalking", true);                                                          // Animate Unit while moving
+        } else _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
         
         if (Input.GetMouseButtonDown(0)) 
         {
