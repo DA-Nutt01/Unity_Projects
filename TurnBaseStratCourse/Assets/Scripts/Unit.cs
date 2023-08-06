@@ -10,13 +10,6 @@ public class Unit : MonoBehaviour
     [SerializeField, Tooltip("Multiplier for movement speed")]
     private int _moveSpeed = 4;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         float stoppinDistance = .1f;
@@ -28,9 +21,9 @@ public class Unit : MonoBehaviour
             transform.position += moveDirection * _moveSpeed * Time.deltaTime;
         }
         
-        if (Input.GetKeyDown(KeyCode.Space)) 
+        if (Input.GetMouseButtonDown(0)) 
         {
-            Move(new Vector3(Random.Range(-10, 11), 0, Random.Range(-10, 11)));
+            Move(MouseController.GetMousePosition());
         }
     }
 
