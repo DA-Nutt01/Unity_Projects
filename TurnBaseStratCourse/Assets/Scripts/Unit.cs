@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    [SerializeField, Tooltip("Target position this unit will move towards.")]
+    [SerializeField, Tooltip("Target world position this unit will move towards.")]
     private Vector3 _targetPostion;
+
+    [SerializeField, Tooltip("READONLY: The current GridPosition this unit is occupying")]
+    private GridPosition _currentGridPosition;
 
     [SerializeField, Tooltip("Multiplier for movement speed")]
     private int _moveSpeed = 4;
@@ -20,6 +23,13 @@ public class Unit : MonoBehaviour
     {
         _targetPostion = transform.position; // Prevent Unit from wandering anywhere before issued a commmand
     }
+    
+    void Start()
+    {
+        _currentGridPosition =  LevelGrid.Instance.GetGridPosition(transform.position); // Cache this unit's starting GridPosition
+        LevelGrid.Instance.AddUnitAtGridPosition(_currentGridPosition, this);           // Set the current position of this unit in it's current GridPosition
+
+    }
 
     void Update()
     {
@@ -32,6 +42,14 @@ public class Unit : MonoBehaviour
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
             _unitAnimator.SetBool("IsWalking", true);                                                          // Animate Unit while moving
         } else _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
+
+        GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);                 // Recalculate the GridPosition of this unit each frame
+        if (_currentGridPosition != newGridPosition)                                                           // If this unit changed GridPosition
+        {
+            // This unit has changed its GridPosition
+            LevelGrid.Instance.ChangeUnitGridPosition(this, _currentGridPosition, newGridPosition);            // Change the current GridPosition of this Unit
+            _currentGridPosition = newGridPosition;                                                            // Update the Unit's current GridPosition
+        }
     }
 
     public void Move(Vector3 targetPosition) 
