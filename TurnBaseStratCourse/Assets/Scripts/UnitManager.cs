@@ -30,7 +30,15 @@ public class UnitManager : MonoBehaviour
          if (Input.GetMouseButtonDown(0)) 
         {
             if(TryHandleUnitSelection()) return; // Prevents unit from moving immediately when selecting a unit
-            if(_selectedUnit != null) _selectedUnit.GetMoveAction().Move(MouseController.GetMousePosition());
+
+            GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
+
+            if (_selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition)) // Check if the selected position is a valid GridPosition
+            {
+                if (_selectedUnit != null) _selectedUnit.GetMoveAction().Move(mouseGridPosition);
+            }
+            else Debug.LogError("GridPosition out of range or invalid");
+            
         }
     }
 

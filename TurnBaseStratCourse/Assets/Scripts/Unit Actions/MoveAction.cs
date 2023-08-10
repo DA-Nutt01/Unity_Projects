@@ -40,14 +40,21 @@ public class MoveAction : MonoBehaviour
         } else _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
 
     }
-        public void Move(Vector3 targetPosition) 
+        public void Move(GridPosition targetGridPosition) 
     {
-        _targetPostion = targetPosition;
+        _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
+    }
+
+    public bool IsValidActionGridPosition(GridPosition gridPosition)
+    {
+        // Takes in a GridPosition & returns true if is a valid GridPosition within the Unit's movement range
+        List<GridPosition> validGridPositionsInMoveRange = GetValidActionGridPositionList(); // Get the list of valid GridPositions within the unit's move range
+        return validGridPositionsInMoveRange.Contains(gridPosition); // Return true if the given GridPosition is within the list of valid GridPositions in move rage
     }
 
     public List<GridPosition> GetValidActionGridPositionList()
     {
-        // Returns a list of GridPositions that are within this unit's max move distance
+        // Returns a list of  valid GridPositions that are within this unit's max move distance
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
         GridPosition unitGridPosition = _unit.GetGridPosition();
@@ -58,7 +65,14 @@ public class MoveAction : MonoBehaviour
             {
                 GridPosition offsetGridPosition = new GridPosition(x, z);
                 GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
-                Debug.Log(testGridPosition);
+
+                // If the GridPosition is not a valid one or is the unit's current GridPosition, or is currently occupied by another unit
+                {
+                    if (!LevelGrid.Instance.isValidGridPosition(testGridPosition) || testGridPosition == unitGridPosition || LevelGrid.Instance.isGridPositionOccupied(testGridPosition)) 
+                    continue; // Skip ahead to the next iteration of this loop (do not add this GridPosition to the list of valid ones
+                }
+
+                validGridPositionList.Add(testGridPosition);
             }
         }
 

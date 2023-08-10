@@ -47,4 +47,10 @@ public class GridObject
         // Returns the current unit occupying this GridObject
         return _occupyingUnitList;
     }
+
+    public bool IsOccupied()
+    {
+        // Returns true if this GridObject currently has a Unit occupying it 
+        return _occupyingUnitList.Count > 0;
+    }
 }
