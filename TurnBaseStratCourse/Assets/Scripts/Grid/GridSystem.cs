@@ -61,4 +61,27 @@ public class GridSystem // Does not inherit from MonoBehaviour because we want t
         // Returns the GridObject at a given GridPosition in the GridSystem
         return _gridObjectArray[gridPosition.x, gridPosition.z];
     }
+
+    public int GetWidth()
+    {
+        // Returns the width of this GridSystem's cell size
+        return _width;
+    }
+
+    public int GetHeight()
+    {
+        // Returns the heigt of this GridSystem's cell size
+        return _height;
+    }
+
+    public bool isValidGridPosition(GridPosition gridPosition)
+    {
+        // Takes in a GridPosition and returns whether it is valid or not, meaning it is a GridPosition that actually
+        // exists within this GridSystem
+
+        return gridPosition.x >= 0 && // The GridSystem originates from (0,0) so it will never have a (-) x or z GridPosition
+               gridPosition.z >= 0 &&
+               gridPosition.x < _width && // Checks if the GridPosition isn't out of bounds of the GridSystem in the (+) direction
+               gridPosition.z < _height;
+    }
 }

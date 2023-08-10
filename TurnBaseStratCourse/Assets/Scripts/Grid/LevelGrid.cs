@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LevelGrid : MonoBehaviour
 {
+
+    // This Class is responsible for utilizing the GridSystem class to generate the playable level 
     public static LevelGrid Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
 
     [SerializeField, Tooltip("Reference to Degbug object for Grid Objects")]
@@ -51,6 +54,21 @@ public class LevelGrid : MonoBehaviour
     }
 
     public GridPosition GetGridPosition(Vector3 worldPosition) => _gridSystem.GetGridPosition(worldPosition); // Lambda Expression
+
+    public Vector3 GetWorldPosition(GridPosition gridPosition) => _gridSystem.GetWorldPosition(gridPosition);
+
+    public bool isValidGridPosition(GridPosition gridPosition) => _gridSystem.isValidGridPosition(gridPosition);
+
+    public int GetWidth() => _gridSystem.GetWidth();
+
+    public int GetHeight() => _gridSystem.GetHeight();
+
+    public bool isGridPositionOccupied(GridPosition gridPositon)
+    {
+        // Takes in a GridPosition and Returns true if a unit is currently occupying this GridPosition
+        GridObject gridObject = _gridSystem.GetGridObject(gridPositon); // Get access to the GridObject within the GridPosiiton
+        return gridObject.IsOccupied();
+    }
 
     public void ChangeUnitGridPosition(Unit movingUnit, GridPosition fromGridPosition, GridPosition toGridPosition)
     {
