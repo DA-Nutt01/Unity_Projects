@@ -14,7 +14,9 @@ public class GridTester : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space)) 
         {
-            _unit.GetMoveAction().GetValidActionGridPositionList();
+            GridSystemVisual.Instance.HideAllGridVisuals();
+            GridSystemVisual.Instance.ShowGridPositionList(_unit.GetMoveAction().GetValidActionGridPositionList());
+            
         }
     }
 

@@ -59,6 +59,10 @@ public class LevelGrid : MonoBehaviour
 
     public bool isValidGridPosition(GridPosition gridPosition) => _gridSystem.isValidGridPosition(gridPosition);
 
+    public int GetWidth() => _gridSystem.GetWidth();
+
+    public int GetHeight() => _gridSystem.GetHeight();
+
     public bool isGridPositionOccupied(GridPosition gridPositon)
     {
         // Takes in a GridPosition and Returns true if a unit is currently occupying this GridPosition
