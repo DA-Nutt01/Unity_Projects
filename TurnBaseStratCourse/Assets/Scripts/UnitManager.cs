@@ -30,7 +30,7 @@ public class UnitManager : MonoBehaviour
          if (Input.GetMouseButtonDown(0)) 
         {
             if(TryHandleUnitSelection()) return; // Prevents unit from moving immediately when selecting a unit
-            if(_selectedUnit != null) _selectedUnit.Move(MouseController.GetMousePosition());
+            if(_selectedUnit != null) _selectedUnit.GetMoveAction().Move(MouseController.GetMousePosition());
         }
     }
 
