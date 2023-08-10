@@ -73,6 +73,7 @@ public class GridSystemVisual : MonoBehaviour
 
     private void UpdateGridVisual()
     {
+        //
         HideAllGridVisuals();
 
         Unit selectedUnit = UnitManager.Instance.GetSelectedUnit();

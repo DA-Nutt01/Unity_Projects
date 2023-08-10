@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MoveAction : MonoBehaviour
+public class MoveAction : BaseAction
 {
-    private Unit _unit; // Reference to the Unit Component of this Unit; Every action will need this reference
 
     [SerializeField, Tooltip("Target world position this unit will move towards.")]
     private Vector3 _targetPostion;
@@ -21,28 +21,36 @@ public class MoveAction : MonoBehaviour
     [SerializeField, Tooltip("Multiplier for rotating speed when unit is turning")]
     private float _rotateSpeed = 10f;
 
-        void Awake() 
+    protected override void Awake() 
     {
+        base.Awake();                        // Call the Awake() on the parent class for this classs
         _targetPostion = transform.position; // Prevent Unit from wandering anywhere before issued a commmand
-        _unit = GetComponent<Unit>();
     }
 
     private void Update()
     {
+        if (!_isActive) return; // While this action is not allowed to run, skip all below code and start a new iteration of Update()
+
         float stoppinDistance = .1f;
+        Vector3 moveDirection = (_targetPostion - transform.position).normalized;                             // Calculate direction to move in
 
         if (Vector3.Distance(_targetPostion, transform.position) > stoppinDistance)
         {
-            Vector3 moveDirection = (_targetPostion - transform.position).normalized;                          // Calculate direction to move in
             transform.position += moveDirection * _moveSpeed * Time.deltaTime;                                 // Move Logic
-            transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
             _unitAnimator.SetBool("IsWalking", true);                                                          // Animate Unit while moving
-        } else _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
+        }
+        else
+        {
+            _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
+            _isActive = false;
+        }
 
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
     }
         public void Move(GridPosition targetGridPosition) 
     {
         _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
+        _isActive = true;
     }
 
     public bool IsValidActionGridPosition(GridPosition gridPosition)

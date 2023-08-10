@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UnitManager : MonoBehaviour
 {   
+    // This Class handles selecting units and selecting actions for that unit to complete
     public static UnitManager Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
 
     public event EventHandler OnSelectedUnitChange; // Event
@@ -27,8 +28,8 @@ public class UnitManager : MonoBehaviour
     }
     void Update()
     { 
-         if (Input.GetMouseButtonDown(0)) 
-        {
+         if (Input.GetMouseButtonDown(0)) // left Click
+         {
             if(TryHandleUnitSelection()) return; // Prevents unit from moving immediately when selecting a unit
 
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
@@ -39,7 +40,12 @@ public class UnitManager : MonoBehaviour
             }
             else Debug.LogError("GridPosition out of range or invalid");
             
-        }
+         }
+
+         if (Input.GetMouseButtonDown(1)) // Right Click
+         {
+            if (_selectedUnit != null) _selectedUnit.GetSpinAction().Spin();
+         }
     }
 
     private bool TryHandleUnitSelection()
