@@ -10,6 +10,8 @@ public class UnitManager : MonoBehaviour
 
     public event EventHandler OnSelectedUnitChange; // Event
 
+    private bool _isBusy; // Flag to determine if any action is currently being executed; Only one action can be active at a time ever
+
     [SerializeField, Tooltip("The currently selected unit the player is issuing commands to")]
     private Unit _selectedUnit;
 
@@ -28,14 +30,17 @@ public class UnitManager : MonoBehaviour
     }
     void Update()
     { 
+        if (_isBusy) return; // Skips the rest of Update if an action is currently being exectuted
+
          if (Input.GetMouseButtonDown(0)) // left Click
          {
             if(TryHandleUnitSelection()) return; // Prevents unit from moving immediately when selecting a unit
 
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
 
-            if (_selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition)) // Check if the selected position is a valid GridPosition
+            if (_selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition, ClearBusy)) // Check if the selected position is a valid GridPosition
             {
+                SetBusy();
                 if (_selectedUnit != null) _selectedUnit.GetMoveAction().Move(mouseGridPosition);
             }
             else Debug.LogError("GridPosition out of range or invalid");
@@ -44,8 +49,19 @@ public class UnitManager : MonoBehaviour
 
          if (Input.GetMouseButtonDown(1)) // Right Click
          {
-            if (_selectedUnit != null) _selectedUnit.GetSpinAction().Spin();
+            SetBusy();
+            if (_selectedUnit != null) _selectedUnit.GetSpinAction().Spin(ClearBusy); // Pass in a ref to ClearBusy to the spin action so it can call it once the action is complete
          }
+    } 
+
+    private void SetBusy()
+    {
+        _isBusy = true;
+    }
+
+    private void ClearBusy()
+    {
+        _isBusy = false;
     }
 
     private bool TryHandleUnitSelection()

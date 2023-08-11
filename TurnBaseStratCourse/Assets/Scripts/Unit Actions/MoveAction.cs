@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,10 +52,12 @@ public class MoveAction : BaseAction
     {
         _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
         _isActive = true;
+        _onActionComplete(); // Call Delegate from base class
     }
 
-    public bool IsValidActionGridPosition(GridPosition gridPosition)
+    public bool IsValidActionGridPosition(GridPosition gridPosition, Action onMoveComplete)
     {
+        this._onActionComplete = onMoveComplete;
         // Takes in a GridPosition & returns true if is a valid GridPosition within the Unit's movement range
         List<GridPosition> validGridPositionsInMoveRange = GetValidActionGridPositionList(); // Get the list of valid GridPositions within the unit's move range
         return validGridPositionsInMoveRange.Contains(gridPosition); // Return true if the given GridPosition is within the list of valid GridPositions in move rage
