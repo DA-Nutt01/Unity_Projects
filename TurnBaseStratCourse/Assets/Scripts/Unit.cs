@@ -7,13 +7,15 @@ public class Unit : MonoBehaviour
     [SerializeField, Tooltip("READONLY: The current GridPosition this unit is occupying")]
     private GridPosition _currentGridPosition;
 
-    private MoveAction _moveAction; // Reference to MoveAction script component
-    private SpinAction _spinAction; // Reference to MoveAction script component
+    private BaseAction[] _baseActionArray; // An array to hold all unit actions on this unit
+    private MoveAction   _moveAction;     // Reference to MoveAction script component
+    private SpinAction   _spinAction;     // Reference to MoveAction script component
 
     private void Awake()
     {
         _moveAction = GetComponent<MoveAction>();
         _spinAction = GetComponent<SpinAction>();
+        _baseActionArray = GetComponents<BaseAction>(); // Takes all scripts that are children of BaseAction on this unit and stores them in the array
     }
     void Start()
     {
@@ -45,5 +47,11 @@ public class Unit : MonoBehaviour
     public GridPosition GetGridPosition()
     {
         return _currentGridPosition;
+    }
+
+    public BaseAction[] GetBaseActionArray()
+    {
+        // Returns the array of all unit actions for this unit
+        return _baseActionArray;
     }
 }

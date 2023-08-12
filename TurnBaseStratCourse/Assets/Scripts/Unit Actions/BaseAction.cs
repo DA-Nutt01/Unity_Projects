@@ -15,4 +15,7 @@ public abstract class BaseAction : MonoBehaviour
     {
         _unit = GetComponent<Unit>();
     }
+
+    public abstract string GetActionName(); // Abstract methods don't have a body; they MUST be implemented by all child classes
+
 }
