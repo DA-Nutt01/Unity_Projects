@@ -18,7 +18,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     void Start()
     { 
-        UnitManager.Instance.OnSelectedUnitChange += UnitManager_OnSelectedUnitChange;
+        UnitActionSystem.Instance.OnSelectedUnitChange += UnitManager_OnSelectedUnitChange;
         UpdateVisual();
     }
 
@@ -29,7 +29,7 @@ public class UnitSelectedVisual : MonoBehaviour
 
     private void UpdateVisual()
     {
-        if(UnitManager.Instance.GetSelectedUnit() == _unit) // The selected unit is currently this unit
+        if(UnitActionSystem.Instance.GetSelectedUnit() == _unit) // The selected unit is currently this unit
         {
             _renderer.enabled = true;                       // Turn on Selected Visual
         } else _renderer.enabled = false;                   // Otherwise turn off Selected Visual

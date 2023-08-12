@@ -10,12 +10,12 @@ public class UnitActionSystemUI : MonoBehaviour
     [SerializeField] private Transform _actionButtonPrefab;          // Ref to the UI action button prefab to be instantiated
     private void Start()
     {
-        UnitManager.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChanged; // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event
+        UnitActionSystem.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChanged; // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event
         CreateUnitActionButton();
     }
    private void CreateUnitActionButton()
    {
-        Unit selectedUnit = UnitManager.Instance.GetSelectedUnit();          // Cache the currentlt selected unit
+        Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();          // Cache the currentlt selected unit
 
         foreach (Transform buttonTransform in _actionButtonContainerPrefab)  // For each button currently in the action container
         {
