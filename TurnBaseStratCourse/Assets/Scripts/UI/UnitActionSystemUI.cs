@@ -11,17 +11,19 @@ public class UnitActionSystemUI : MonoBehaviour
     [SerializeField] private Transform       _actionButtonPrefab;          // Ref to the UI action button prefab to be instantiated
     [SerializeField] private TextMeshProUGUI _actionPointText;             // Ref to action point text
 
-    private List<ActionButtonUI>       _actionButtonUIList;          // A list of all currently active action buttons
+    private List<ActionButtonUI>             _actionButtonUIList;          // A list of all currently active action buttons
 
     private void Awake()
     {
-        _actionButtonUIList = new List<ActionButtonUI>();            // Instantiate the list 
+        _actionButtonUIList = new List<ActionButtonUI>();                  // Instantiate the list 
     }
     private void Start()
     {
         UnitActionSystem.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChanged;     // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event so it is called every time the event fires
         UnitActionSystem.Instance.OnSelectedActionChange += UnitActionSystem_OnSelectedActionChanged; // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event
         UnitActionSystem.Instance.OnActionStarted += UnitActionSystem_OnActionStarted;                // Subscribe to event
+        TurnSystem.Instance.OnRoundChange += TurnSystem_OnRoundChange;                                // Subscribe to event to listen for the start of a new round
+        Unit.OnAnyActionPointChange += Unit_OnAnyActionPointChange;
 
         UpdateActionPoints();
         CreateUnitActionButton();
@@ -81,5 +83,17 @@ public class UnitActionSystemUI : MonoBehaviour
         // Gets the current AP of the selcted Unit & updates the text element to display that value
         Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
         _actionPointText.text = $"AP: ({selectedUnit.GetActionPoints()})";
+    }
+
+    private void TurnSystem_OnRoundChange(object sender, EventArgs e) // Subscriber method
+    {
+        // When a new round starts Update the Action Point UI text to display the refreshed AP of the selected unit
+        UpdateActionPoints();
+    }
+
+    private void Unit_OnAnyActionPointChange(object sender, EventArgs e)
+    {
+        // When the action points on any unit changes, Update the UI text
+        UpdateActionPoints();
     }
 }
