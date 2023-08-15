@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -7,9 +8,10 @@ public class Unit : MonoBehaviour
     [SerializeField, Tooltip("READONLY: The current GridPosition this unit is occupying")]
     private GridPosition _currentGridPosition;
 
-    private BaseAction[] _baseActionArray; // An array to hold all unit actions on this unit
-    private MoveAction   _moveAction;     // Reference to MoveAction script component
-    private SpinAction   _spinAction;     // Reference to MoveAction script component
+    private BaseAction[] _baseActionArray;  // An array to hold all unit actions on this unit
+    private MoveAction   _moveAction;       // Reference to MoveAction script component
+    private SpinAction   _spinAction;       // Reference to MoveAction script component
+    private int          _actionPoints = 2; // The number of actions this unit can take per turn
 
     private void Awake()
     {
@@ -53,5 +55,39 @@ public class Unit : MonoBehaviour
     {
         // Returns the array of all unit actions for this unit
         return _baseActionArray;
+    }
+
+    public bool CanSpendActionPointsToTakeAction(BaseAction baseAction)
+    {
+        // Takes in an action and returns true this unit has enough AP to spend on that action; otherwise returns false
+        return (_actionPoints >= baseAction.GetActionPointCost());
+    }
+
+    private void SpendActionPoints(int amount)
+    {
+        _actionPoints -= amount;
+    }
+
+    public int GetActionPoints()
+    {
+        // Returns the current total Action Points this unit has this turn
+        return _actionPoints;
+    }
+
+    public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
+    {
+        // Takes in an action and attempts to spend the corresponding action points on that action
+        // Returns true if successfully spends action points on the action; returns false otherwise
+
+        if (CanSpendActionPointsToTakeAction(baseAction)) 
+        {
+            SpendActionPoints(baseAction.GetActionPointCost()); // Spend action points on given action
+            return true;
+        } 
+        else 
+        {
+            Debug.LogError($"Not enough Action Points to take {baseAction}");
+            return false; // Otherwise do not spend action points and return false
+        }
     }
 }

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using TMPro;
 using UnityEngine;
 
 public class UnitActionSystemUI : MonoBehaviour
 {
-    [SerializeField] private Transform _actionButtonContainerPrefab; // Ref to the container for all UI action buttons
-    [SerializeField] private Transform _actionButtonPrefab;          // Ref to the UI action button prefab to be instantiated
+    [SerializeField] private Transform       _actionButtonContainerPrefab; // Ref to the container for all UI action buttons
+    [SerializeField] private Transform       _actionButtonPrefab;          // Ref to the UI action button prefab to be instantiated
+    [SerializeField] private TextMeshProUGUI _actionPointText;             // Ref to action point text
 
     private List<ActionButtonUI>       _actionButtonUIList;          // A list of all currently active action buttons
 
@@ -17,8 +19,11 @@ public class UnitActionSystemUI : MonoBehaviour
     }
     private void Start()
     {
-        UnitActionSystem.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChanged;   // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event
+        UnitActionSystem.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChanged;     // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event so it is called every time the event fires
         UnitActionSystem.Instance.OnSelectedActionChange += UnitActionSystem_OnSelectedActionChanged; // Subscribe UnitActionSystem_OnSelectedUnitChanged to the event
+        UnitActionSystem.Instance.OnActionStarted += UnitActionSystem_OnActionStarted;                // Subscribe to event
+
+        UpdateActionPoints();
         CreateUnitActionButton();
         UpdateSelectedVisual();
     }
@@ -46,6 +51,7 @@ public class UnitActionSystemUI : MonoBehaviour
 
     private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) // Subscribing method for OnSelectedUnitChanged
     {
+        UpdateActionPoints();     // Update the Action Point text to reflect the current AP of the newly selected unit
         CreateUnitActionButton(); // When the event is triggered, recreate the buttons for the newly selected unit
         UpdateSelectedVisual();   // Update the visuals for valid GridPositions for the new action of the newly selected unit
     }
@@ -55,6 +61,12 @@ public class UnitActionSystemUI : MonoBehaviour
         UpdateSelectedVisual(); // When the event is triggered, Update the visual for valid GridPositions for the newly selected action
     }
 
+    private void UnitActionSystem_OnActionStarted(object sender, EventArgs e) 
+    {
+        // When this event triggers, Update the visuals for the Action Point UI
+        UpdateActionPoints();
+    }
+
 
     private void UpdateSelectedVisual()
     {
@@ -62,5 +74,12 @@ public class UnitActionSystemUI : MonoBehaviour
         {
             actionButtonUI.UpdateSelectedVisual();                     // Update the 'Selected' GFX for this button
         }
+    }
+
+    private void UpdateActionPoints()
+    {
+        // Gets the current AP of the selcted Unit & updates the text element to display that value
+        Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+        _actionPointText.text = $"AP: ({selectedUnit.GetActionPoints()})";
     }
 }

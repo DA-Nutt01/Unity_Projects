@@ -10,6 +10,7 @@ public class UnitActionSystem : MonoBehaviour
     public event EventHandler OnSelectedUnitChange;             // Event for when selected unit changes
     public event EventHandler OnSelectedActionChange;           // Event for when selected action changes
     public event EventHandler<bool> OnBusyChange;               // Event for when the _isBusy flag changes; this event will take in _isBusy as a parameter
+    public event EventHandler OnActionStarted;                  // Event for when an action starts, indicatiing when AP have been spent
     private bool _isBusy;                                       // Flag to determine if any action is currently being executed; Only one action can be active at a time ever
     private BaseAction _selectedAction;                         // The currently selected action for a unit to take
 
@@ -54,10 +55,15 @@ public class UnitActionSystem : MonoBehaviour
         {
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
 
-            if (_selectedAction.IsValidActionGridPosition(mouseGridPosition)) // If the GridPosition is valid for the selected action
+            if (_selectedAction.IsValidActionGridPosition(mouseGridPosition))        // If the GridPosition is valid for the selected action
             {   
-                SetBusy();
-                _selectedAction.TakeAction(mouseGridPosition, ClearBusy);     // Call the action 
+                if (_selectedUnit.TrySpendActionPointsToTakeAction(_selectedAction)) // IF Ap succesfully spent on this action
+                {
+                    SetBusy();
+                    _selectedAction.TakeAction(mouseGridPosition, ClearBusy);        // Call the action
+
+                    OnActionStarted?.Invoke(this, EventArgs.Empty);                  // Fire this event if there are any subscribers
+                }
             }
         }
     }
