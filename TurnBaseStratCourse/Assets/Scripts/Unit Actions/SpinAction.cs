@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class SpinAction : BaseAction
@@ -13,11 +14,31 @@ public class SpinAction : BaseAction
         transform.eulerAngles += new Vector3(0, spinDegrees, 0);
 
         _totalSpinAmount += spinDegrees;
-        if (_totalSpinAmount > 360f) _isActive = false; // Stop spinning once unit has spun 360 degrees
+        if (_totalSpinAmount > 360f) 
+        {
+            _isActive = false;   // Stop spinning once unit has spun 360 degrees
+            _onActionComplete(); // Call our delegate from the base class
+        }
     }
-    public void Spin()
+    public override void TakeAction(GridPosition gridPosition, Action OnSpinComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
     {
+        _onActionComplete = OnSpinComplete; 
         _isActive = true;
         _totalSpinAmount = 0; 
+    }
+
+    public override string GetActionName()
+    {
+        return "Spin";
+    }
+
+    public override List<GridPosition> GetValidActionGridPositionList()
+    {
+        // Returns a list of  valid GridPositions that are within this unit's max move distance
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        GridPosition unitGridPosition = _unit.GetGridPosition(); // Cache the current GridPositon of this unit
+
+        return new List<GridPosition>{unitGridPosition}; // Return a list of this unit's GridPosition, since it is the only valid GridPosition it can spin on
     }
 }

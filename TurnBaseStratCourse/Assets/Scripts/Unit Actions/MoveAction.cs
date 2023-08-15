@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,24 +44,19 @@ public class MoveAction : BaseAction
         {
             _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
             _isActive = false;
+            _onActionComplete();                                                                            // Call the delegate function to clear _isBusy on The UnitActionSystem
         }
 
         transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
     }
-        public void Move(GridPosition targetGridPosition) 
+    public override void TakeAction(GridPosition targetGridPosition, Action onMoveComplete) 
     {
+        _onActionComplete = onMoveComplete;
         _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
         _isActive = true;
     }
 
-    public bool IsValidActionGridPosition(GridPosition gridPosition)
-    {
-        // Takes in a GridPosition & returns true if is a valid GridPosition within the Unit's movement range
-        List<GridPosition> validGridPositionsInMoveRange = GetValidActionGridPositionList(); // Get the list of valid GridPositions within the unit's move range
-        return validGridPositionsInMoveRange.Contains(gridPosition); // Return true if the given GridPosition is within the list of valid GridPositions in move rage
-    }
-
-    public List<GridPosition> GetValidActionGridPositionList()
+    public override List<GridPosition> GetValidActionGridPositionList()
     {
         // Returns a list of  valid GridPositions that are within this unit's max move distance
         List<GridPosition> validGridPositionList = new List<GridPosition>();
@@ -85,5 +81,10 @@ public class MoveAction : BaseAction
         }
 
         return validGridPositionList;
+    }
+
+    public override string GetActionName()
+    {
+        return "Move";
     }
 }
