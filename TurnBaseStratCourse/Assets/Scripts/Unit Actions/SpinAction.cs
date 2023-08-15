@@ -16,13 +16,13 @@ public class SpinAction : BaseAction
         _totalSpinAmount += spinDegrees;
         if (_totalSpinAmount > 360f) 
         {
-            _isActive = false; // Stop spinning once unit has spun 360 degrees
+            _isActive = false;   // Stop spinning once unit has spun 360 degrees
             _onActionComplete(); // Call our delegate from the base class
         }
     }
-    public void Spin(Action OnSpinComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
+    public override void TakeAction(GridPosition gridPosition, Action OnSpinComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
     {
-        this._onActionComplete = OnSpinComplete; // Take the argument SpinCompleteDelegate and set the internal _onSpinComplete delegate as it
+        _onActionComplete = OnSpinComplete; 
         _isActive = true;
         _totalSpinAmount = 0; 
     }
@@ -30,5 +30,15 @@ public class SpinAction : BaseAction
     public override string GetActionName()
     {
         return "Spin";
+    }
+
+    public override List<GridPosition> GetValidActionGridPositionList()
+    {
+        // Returns a list of  valid GridPositions that are within this unit's max move distance
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        GridPosition unitGridPosition = _unit.GetGridPosition(); // Cache the current GridPositon of this unit
+
+        return new List<GridPosition>{unitGridPosition}; // Return a list of this unit's GridPosition, since it is the only valid GridPosition it can spin on
     }
 }

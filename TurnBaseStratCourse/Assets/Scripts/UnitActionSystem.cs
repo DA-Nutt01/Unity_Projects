@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
-using Unity.VisualScripting;
+using UnityEngine.EventSystems;
 
 public class UnitActionSystem : MonoBehaviour
 {   
     // This Class handles selecting units and selecting actions for that unit to complete
     public static UnitActionSystem Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
-    public event EventHandler OnSelectedUnitChange;             // Event
+    public event EventHandler OnSelectedUnitChange;             // Event for when selected unit changes
+    public event EventHandler OnSelectedActionChange;           // Event for when selected action changes
     private bool _isBusy;                                       // Flag to determine if any action is currently being executed; Only one action can be active at a time ever
     private BaseAction _selectedAction;                         // The currently selected action for a unit to take
 
@@ -35,9 +35,11 @@ public class UnitActionSystem : MonoBehaviour
     }
     void Update()
     { 
-        if (_isBusy) return; // Skips the rest of Update if an action is currently being exectuted
+        if (_isBusy) return;                                        // Skips the rest of Update if an action is currently being exectuted
 
-        if (TryHandleUnitSelection()) // When left clicking, if the mouse hits a unit, it selects that unit and makes sure not to call a unit action
+        if (EventSystem.current.IsPointerOverGameObject())  return; // If the mouse is hovering over an UI Elements
+
+        if (TryHandleUnitSelection())                               // When left clicking, if the mouse hits a unit, it selects that unit and makes sure not to call a unit action
         {
             return;
         }
@@ -51,20 +53,10 @@ public class UnitActionSystem : MonoBehaviour
         {
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
 
-            switch (_selectedAction)
-            {
-                case MoveAction moveAction:
-                    if (moveAction.IsValidActionGridPosition(mouseGridPosition, ClearBusy)) // Check if the selected position is a valid GridPosition
-                    {
-                        SetBusy();
-                        moveAction.Move(mouseGridPosition);
-                    }
-                    else Debug.LogError("GridPosition out of range or invalid");
-                    break;
-                case SpinAction spinAction:
-                    SetBusy();
-                    spinAction.Spin(ClearBusy);
-                    break;
+            if (_selectedAction.IsValidActionGridPosition(mouseGridPosition)) // If the GridPosition is valid for the selected action
+            {   
+                SetBusy();
+                _selectedAction.TakeAction(mouseGridPosition, ClearBusy);     // Call the action 
             }
         }
     }
@@ -83,15 +75,19 @@ public class UnitActionSystem : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);                                       // Shoot a ray from the cam to mouse position
-            if(Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _unitMask))                            // If the ray hits a collider on the unit mask
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);            // Shoot a ray from the cam to mouse position
+            if(Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _unitMask)) // If the ray hits a collider on the unit mask
             {
-                if(hit.transform.TryGetComponent<Unit>(out Unit unitComponent)) SelectUnit(unitComponent);     // Selects unit if it has a Unit Component
-                return true;                                                                                   // Returns true if unnit was selected
+                if(hit.transform.TryGetComponent<Unit>(out Unit unit)) 
+                {
+                    if (unit == _selectedUnit) return false; // If the selected unit is already selected, return
+                    SelectUnit(unit);                        // Selects unit if it has a Unit Component
+                }
+                return true;                                 // Returns true if unnit was selected
             }     
         }         
         
-        return false;                                                                        // Returns false if no unit was found
+        return false;                                        // Returns false if no unit was found
     }
 
     private void SelectUnit(Unit unitToSelect)
@@ -105,10 +101,18 @@ public class UnitActionSystem : MonoBehaviour
     {
         // Sets the currently selected action for the currently selected unit
         _selectedAction = baseAction;
+
+        OnSelectedActionChange?.Invoke(this, EventArgs.Empty); // Fire the event if there are any subscribers to it
     }
 
     public Unit GetSelectedUnit() // Create a public Get function to grant access to private fields to other classes
     {
         return _selectedUnit;
+    }
+
+    public BaseAction GetSelectedAction()
+    {
+        // Returns the currently selected unit action
+        return _selectedAction;
     }
 }
