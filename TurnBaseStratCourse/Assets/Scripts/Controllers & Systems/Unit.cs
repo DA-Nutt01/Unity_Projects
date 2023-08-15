@@ -117,4 +117,14 @@ public class Unit : MonoBehaviour
             _currentActionPoints = _maxActionPoints; // When a new rounds starts, reset the Action Points of this unit only if it is on the side that is currently its turn
         }
     }
+
+    public void TakeDamage()
+    {
+        Debug.Log(transform + " Damgaged");
+    }
+
+    public Vector3 GetWorldPosition()
+    {
+        return transform.position;
+    }
 }

@@ -37,4 +37,16 @@ public abstract class BaseAction : MonoBehaviour
         // Returns the number of AP this costs to execute this action
         return _actionPointCost;
     }
+
+    protected void ActionStart(Action OnActionComplete)
+    {
+        _isActive = true;
+        _onActionComplete = OnActionComplete;
+    }
+
+    protected void ActionComplete()
+    {
+        _isActive = false;
+        _onActionComplete();
+    }
 }

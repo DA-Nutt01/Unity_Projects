@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7138306569481663470}
   - component: {fileID: 334309045427215349}
   - component: {fileID: -3519268723884905606}
+  - component: {fileID: 2062238435947091074}
   - component: {fileID: 7656287860775487173}
   m_Layer: 7
   m_Name: Unit
@@ -49,6 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3c073e0761a95848a52c92e3c55cda0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxActionPoints: 2
+  _isEnemy: 0
 --- !u!114 &334309045427215349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,6 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe804303038646c4da5d32054377be9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _actionPointCost: 1
   _targetPostion: {x: 0, y: 0, z: 0}
   _unitAnimator: {fileID: 1155926792312836686}
   _maxMoveDistance: 4
@@ -78,6 +82,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9817b8c2b8a0544a895265faee0f5bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _actionPointCost: 1
+--- !u!114 &2062238435947091074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6217035127639276214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9504f3b208cb7624c8dbbe398d4527dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _actionPointCost: 1
+  _maxShootRange: 7
 --- !u!65 &7656287860775487173
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -487,6 +506,11 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 137720934533220950, guid: 2f3e27eecb190e44a9af50723c394274,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 673443bdcb7bf2f47be93ce60e68966f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

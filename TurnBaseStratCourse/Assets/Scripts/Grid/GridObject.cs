@@ -53,4 +53,15 @@ public class GridObject
         // Returns true if this GridObject currently has a Unit occupying it 
         return _occupyingUnitList.Count > 0;
     }
+
+    public Unit GetUnit()
+    {
+        // Returns the current unit on this GridObject
+        if (IsOccupied())
+        {
+            // We can always return the 1st unit on this because this will only ever run when all units are idle
+            return _occupyingUnitList[0]; 
+        } 
+        else return null;
+    }
 }

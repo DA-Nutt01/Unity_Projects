@@ -43,17 +43,15 @@ public class MoveAction : BaseAction
         else
         {
             _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
-            _isActive = false;
-            _onActionComplete();                                                                            // Call the delegate function to clear _isBusy on The UnitActionSystem
+            ActionComplete();                                                                            // Call the delegate function to clear _isBusy on The UnitActionSystem
         }
 
         transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
     }
-    public override void TakeAction(GridPosition targetGridPosition, Action onMoveComplete) 
+    public override void TakeAction(GridPosition targetGridPosition, Action onActionComplete) 
     {
-        _onActionComplete = onMoveComplete;
+        ActionStart(onActionComplete);
         _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
-        _isActive = true;
     }
 
     public override List<GridPosition> GetValidActionGridPositionList()
