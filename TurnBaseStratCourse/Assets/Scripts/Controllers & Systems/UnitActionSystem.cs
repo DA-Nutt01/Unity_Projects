@@ -9,6 +9,7 @@ public class UnitActionSystem : MonoBehaviour
     public static UnitActionSystem Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
     public event EventHandler OnSelectedUnitChange;             // Event for when selected unit changes
     public event EventHandler OnSelectedActionChange;           // Event for when selected action changes
+    public event EventHandler<bool> OnBusyChange;               // Event for when the _isBusy flag changes; this event will take in _isBusy as a parameter
     private bool _isBusy;                                       // Flag to determine if any action is currently being executed; Only one action can be active at a time ever
     private BaseAction _selectedAction;                         // The currently selected action for a unit to take
 
@@ -64,11 +65,13 @@ public class UnitActionSystem : MonoBehaviour
     private void SetBusy()
     {
         _isBusy = true;
+        OnBusyChange?.Invoke(this, _isBusy); // Fire the event if there any subscribers
     }
 
     private void ClearBusy()
     {
         _isBusy = false;
+        OnBusyChange?.Invoke(this, _isBusy); // Fire the event if there are any subscribers
     }
 
     private bool TryHandleUnitSelection()
