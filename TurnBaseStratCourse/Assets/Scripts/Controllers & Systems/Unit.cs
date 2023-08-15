@@ -12,12 +12,13 @@ public class Unit : MonoBehaviour
 
     [SerializeField, Tooltip("READONLY: The current GridPosition this unit is occupying")]
     private GridPosition _currentGridPosition; 
-    private BaseAction[] _baseActionArray; // An array to hold all unit actions on this unit
-    private MoveAction   _moveAction;      // Reference to MoveAction script component
-    private SpinAction   _spinAction;      // Reference to MoveAction script component
+    private BaseAction[] _baseActionArray;  // An array to hold all unit actions on this unit
+    private MoveAction   _moveAction;       // Reference to MoveAction script component
+    private SpinAction   _spinAction;       // Reference to MoveAction script component
     [SerializeField, Tooltip("The max action points this unit has per round")] 
     private int _maxActionPoints = 2;
-    private int _currentActionPoints;      // The number of actions this unit can take per turn
+    private int _currentActionPoints;       // The number of actions this unit can take per turn
+    [SerializeField] private bool _isEnemy; // Flag for defining enemies
 
     private void Awake()
     {
@@ -85,6 +86,11 @@ public class Unit : MonoBehaviour
         return _currentActionPoints;
     }
 
+    public bool IsEnemy()
+    {
+        return _isEnemy;
+    }
+
     public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
     {
         // Takes in an action and attempts to spend the corresponding action points on that action
@@ -104,8 +110,11 @@ public class Unit : MonoBehaviour
 
     private void TurnSystem_OnRoundChange(object sender, EventArgs e) // Subscriber Method; 'object sender' reps the obj that fired the event
     {
-       _currentActionPoints = _maxActionPoints; // When a new rounds starts, reset the Action Points of this unit
+        if ((!_isEnemy && TurnSystem.Instance.IsPlayerTurn()) || (_isEnemy && !TurnSystem.Instance.IsPlayerTurn()))
+        {
+            OnAnyActionPointChange?.Invoke(this, EventArgs.Empty); // Fire event
 
-       OnAnyActionPointChange?.Invoke(this, EventArgs.Empty); // Fire event
+            _currentActionPoints = _maxActionPoints; // When a new rounds starts, reset the Action Points of this unit only if it is on the side that is currently its turn
+        }
     }
 }

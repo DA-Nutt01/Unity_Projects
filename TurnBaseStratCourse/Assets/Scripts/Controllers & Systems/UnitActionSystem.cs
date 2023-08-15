@@ -2,10 +2,12 @@ using System;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Lumin;
 
 public class UnitActionSystem : MonoBehaviour
 {   
     // This Class handles selecting units and selecting actions for that unit to complete
+
     public static UnitActionSystem Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
     public event EventHandler OnSelectedUnitChange;             // Event for when selected unit changes
     public event EventHandler OnSelectedActionChange;           // Event for when selected action changes
@@ -38,6 +40,8 @@ public class UnitActionSystem : MonoBehaviour
     void Update()
     { 
         if (_isBusy) return;                                        // Skips the rest of Update if an action is currently being exectuted
+
+        if (!TurnSystem.Instance.IsPlayerTurn()) return;            // Disable Player Unit Selection while it is the enemy's turn
 
         if (EventSystem.current.IsPointerOverGameObject())  return; // If the mouse is hovering over an UI Elements
 
@@ -90,6 +94,9 @@ public class UnitActionSystem : MonoBehaviour
                 if(hit.transform.TryGetComponent<Unit>(out Unit unit)) 
                 {
                     if (unit == _selectedUnit) return false; // If the selected unit is already selected, return
+
+                    if (unit.IsEnemy()) return false;        // The player cannot select Enemy Units
+
                     SelectUnit(unit);                        // Selects unit if it has a Unit Component
                 }
                 return true;                                 // Returns true if unnit was selected
