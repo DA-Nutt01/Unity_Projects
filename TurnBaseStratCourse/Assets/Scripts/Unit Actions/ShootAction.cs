@@ -82,7 +82,9 @@ public class ShootAction : BaseAction
     private void Shoot()
     {
         OnShoot?.Invoke(this, new OnShootEventArgs{targetUnit = _targetUnit, shootingUnit = _unit});
-        _targetUnit.TakeDamage();
+        // Randomize the damage for every shot
+        int shootDamage = UnityEngine.Random.Range(20, 60);
+        _targetUnit.TakeDamage(shootDamage);
     }
     public override string GetActionName()
     {

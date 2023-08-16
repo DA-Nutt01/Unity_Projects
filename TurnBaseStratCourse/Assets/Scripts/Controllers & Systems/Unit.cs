@@ -15,6 +15,7 @@ public class Unit : MonoBehaviour
     private BaseAction[] _baseActionArray;  // An array to hold all unit actions on this unit
     private MoveAction   _moveAction;       // Reference to MoveAction script component
     private SpinAction   _spinAction;       // Reference to MoveAction script component
+    private HealthSystem _healthSystem;
     [SerializeField, Tooltip("The max action points this unit has per round")] 
     private int _maxActionPoints = 2;
     private int _currentActionPoints;       // The number of actions this unit can take per turn
@@ -25,6 +26,7 @@ public class Unit : MonoBehaviour
         _currentActionPoints = _maxActionPoints;
         _moveAction = GetComponent<MoveAction>();
         _spinAction = GetComponent<SpinAction>();
+        _healthSystem = GetComponent<HealthSystem>();
         _baseActionArray = GetComponents<BaseAction>(); // Takes all scripts that are children of BaseAction on this unit and stores them in the array
     }
     void Start()
@@ -33,6 +35,7 @@ public class Unit : MonoBehaviour
         LevelGrid.Instance.AddUnitAtGridPosition(_currentGridPosition, this);           // Set the current position of this unit in it's current GridPosition
 
         TurnSystem.Instance.OnRoundChange += TurnSystem_OnRoundChange;                  // Subscribe to event to update this unit's action points at the start of the round
+        _healthSystem.onDeath += HealthSystem_OnDeath;
     }
 
     void Update()
@@ -118,9 +121,16 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void TakeDamage()
+    private void HealthSystem_OnDeath(object sender, EventArgs e)
     {
-        Debug.Log(transform + " Damgaged");
+        // Remove this unit from the GridSystem on death
+        LevelGrid.Instance.RemoveUnitAtGridPosition(_currentGridPosition, this);
+        Destroy(gameObject);
+    }
+
+    public void TakeDamage(int dmgAmount)
+    {
+        _healthSystem.TakeDamage(dmgAmount);
     }
 
     public Vector3 GetWorldPosition()
