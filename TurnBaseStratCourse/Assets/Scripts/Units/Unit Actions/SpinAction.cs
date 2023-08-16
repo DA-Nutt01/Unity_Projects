@@ -16,15 +16,15 @@ public class SpinAction : BaseAction
         _totalSpinAmount += spinDegrees;
         if (_totalSpinAmount > 360f) 
         {
-            _isActive = false;   // Stop spinning once unit has spun 360 degrees
-            _onActionComplete(); // Call our delegate from the base class
+            ActionComplete();    // Call our delegate from the base class
         }
     }
-    public override void TakeAction(GridPosition gridPosition, Action OnSpinComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
+    public override void TakeAction(GridPosition gridPosition, Action OnActionComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
     {
-        _onActionComplete = OnSpinComplete; 
-        _isActive = true;
         _totalSpinAmount = 0; 
+
+        // For execution order purposes, make sure ActionStart() is called after initial setup of this action
+        ActionStart(OnActionComplete);
     }
 
     public override string GetActionName()

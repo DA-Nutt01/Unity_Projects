@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEditor.EditorTools;
+using UnityEngine.EventSystems;
 
 public abstract class BaseAction : MonoBehaviour
 {
     // Base Class for all actions; Does not sit on an object and is instead inherited from all other actions
+
+    // Static events are great in the sense that a script that needs to know whenever a certain thing happens across 
+    // potentially dozens of instances of a script, the subscriber does not have to subscribe to each and every instance
+    // it wishes to listen to. The static event will cover all instances
+    public static event EventHandler OnAnyActionStarted; 
+    public static event EventHandler OnAnyActionCompleted; 
 
     protected Unit   _unit;             // Reference to the Unit Component of this Unit; Every action will need this reference
     protected bool   _isActive;         // Flag for if this action is currently allowed to run or not
@@ -36,5 +43,25 @@ public abstract class BaseAction : MonoBehaviour
     {
         // Returns the number of AP this costs to execute this action
         return _actionPointCost;
+    }
+
+    protected void ActionStart(Action OnActionComplete)
+    {
+        _isActive = true;
+        _onActionComplete = OnActionComplete;
+        OnAnyActionStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected void ActionComplete()
+    {
+        _isActive = false;
+        _onActionComplete();
+        OnAnyActionCompleted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public Unit GetUnit()
+    {   
+        // Returns the Unit this action belongs to
+        return _unit;
     }
 }

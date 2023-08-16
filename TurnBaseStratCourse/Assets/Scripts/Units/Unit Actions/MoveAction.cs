@@ -10,9 +10,6 @@ public class MoveAction : BaseAction
     [SerializeField, Tooltip("Target world position this unit will move towards.")]
     private Vector3 _targetPostion;
 
-    [SerializeField, Tooltip("Animator component of this unit")]
-    private Animator _unitAnimator;
-
     [SerializeField, Tooltip("The max number of grid positions this unit can travel in a single move action")]
     private int _maxMoveDistance = 4;
     
@@ -21,6 +18,9 @@ public class MoveAction : BaseAction
 
     [SerializeField, Tooltip("Multiplier for rotating speed when unit is turning")]
     private float _rotateSpeed = 10f;
+
+    public event EventHandler OnStartMoving;
+    public event EventHandler OnStopMoving;
 
     protected override void Awake() 
     {
@@ -38,22 +38,22 @@ public class MoveAction : BaseAction
         if (Vector3.Distance(_targetPostion, transform.position) > stoppinDistance)
         {
             transform.position += moveDirection * _moveSpeed * Time.deltaTime;                                 // Move Logic
-            _unitAnimator.SetBool("IsWalking", true);                                                          // Animate Unit while moving
         }
         else
         {
-            _unitAnimator.SetBool("IsWalking", false);                                                      // Update animations when no longer moving
-            _isActive = false;
-            _onActionComplete();                                                                            // Call the delegate function to clear _isBusy on The UnitActionSystem
+            OnStopMoving?.Invoke(this, EventArgs.Empty);
+            ActionComplete();                                                                            // Call the delegate function to clear _isBusy on The UnitActionSystem
         }
 
         transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * _rotateSpeed); // Rotate unit model to face dir it is moving in
     }
-    public override void TakeAction(GridPosition targetGridPosition, Action onMoveComplete) 
+    public override void TakeAction(GridPosition targetGridPosition, Action onActionComplete) 
     {
-        _onActionComplete = onMoveComplete;
         _targetPostion = LevelGrid.Instance.GetWorldPosition(targetGridPosition);
-        _isActive = true;
+
+        OnStartMoving?.Invoke(this, EventArgs.Empty);
+
+        ActionStart(onActionComplete);
     }
 
     public override List<GridPosition> GetValidActionGridPositionList()

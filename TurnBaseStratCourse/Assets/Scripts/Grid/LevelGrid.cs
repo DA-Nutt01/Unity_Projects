@@ -70,6 +70,15 @@ public class LevelGrid : MonoBehaviour
         return gridObject.IsOccupied();
     }
 
+    public Unit GetUnitAtGridPosition(GridPosition gridPositon)
+    {
+        // Takes in a GridPosition and returns the Unit currently occupying it; Otherwise returns null
+
+        // Get access to the GridObject within the GridPosiiton
+        GridObject gridObject = _gridSystem.GetGridObject(gridPositon); 
+        return gridObject.GetUnit();
+    }
+
     public void ChangeUnitGridPosition(Unit movingUnit, GridPosition fromGridPosition, GridPosition toGridPosition)
     {
         // Takes in a Unit, the GridPosition it is currently leaving, & the GridPosition it is arriving to & changes the unit's interna; GridPosition

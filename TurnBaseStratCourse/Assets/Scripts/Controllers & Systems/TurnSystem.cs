@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class TurnSystem : MonoBehaviour
 {
-    public static TurnSystem Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
+    public static TurnSystem Instance {get; private set;}     // Public attribute to allow external classes to read from this class but not write to it (Singleton)
 
-    public event EventHandler OnRoundChange;              // Event for when the current round changes
-    private int _roundCount = 1;                          // The total number of turns the player has taken; Always starts on Round 1 obviously
+    public event EventHandler OnRoundChange;                  // Event for when the current round changes
+    private int                         _roundCount = 1;      // The total number of turns the player has taken; Always starts on Round 1 obviously
+    [SerializeField] private bool       _isPlayerTurn = true; // Flag for when it is currently the player's turn or not; defaults to true
 
     void Awake() 
     {
@@ -23,6 +24,7 @@ public class TurnSystem : MonoBehaviour
     public void NextTurn()
     {
         _roundCount ++;                               // Increment the turn count by 1
+        _isPlayerTurn = !_isPlayerTurn;               // Invert this bool
         OnRoundChange?.Invoke(this, EventArgs.Empty); // Fire this event if there are any subscribers
     }
 
@@ -30,5 +32,10 @@ public class TurnSystem : MonoBehaviour
     {
         // Returns the current round count
         return _roundCount;
+    }
+
+    public bool IsPlayerTurn()
+    {
+        return _isPlayerTurn;
     }
 }
