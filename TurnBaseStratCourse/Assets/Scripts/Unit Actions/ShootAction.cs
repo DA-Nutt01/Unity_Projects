@@ -22,6 +22,7 @@ public class ShootAction : BaseAction
     [SerializeField, Tooltip("Multiplier for rotating speed when unit is turning")]
     private float _rotateSpeed = 15f;
 
+    public event EventHandler OnShoot;
     private State _state;
     private float _stateTimer; // Amount of time between switching to each state of this action
     private Unit  _targetUnit;
@@ -74,6 +75,7 @@ public class ShootAction : BaseAction
 
     private void Shoot()
     {
+        OnShoot?.Invoke(this, EventArgs.Empty);
         _targetUnit.TakeDamage();
     }
     public override string GetActionName()
