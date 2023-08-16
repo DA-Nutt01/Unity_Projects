@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class UnitAnimator : MonoBehaviour
 {
-    [SerializeField] private Animator _unitAnimator;
+    [SerializeField] private Animator  _unitAnimator;
+    [SerializeField] private Transform _bulletProjectilePrefab;
+    [SerializeField] private Transform _shootPointTransform;
 
     private void Awake()
     {
@@ -26,9 +28,20 @@ public class UnitAnimator : MonoBehaviour
         _unitAnimator.SetBool("IsWalking", true);
     }
 
-    private void shootAction_OnShoot(object sender, EventArgs e)
-    {
+    private void shootAction_OnShoot(object sender, ShootAction.OnShootEventArgs e)
+    {   
         _unitAnimator.SetTrigger("Shoot");
+
+        Transform bulletProjectileTransform = Instantiate(_bulletProjectilePrefab, _shootPointTransform.position, Quaternion.identity);
+        BulletProjectile bulletProjectile = bulletProjectileTransform.GetComponent<BulletProjectile>();
+
+        Vector3 targetUnitShootAtPosition = e.targetUnit.GetWorldPosition();
+        
+        // Make the angle at which the unit shoot be completely parrallel to the point where the bullet spawns
+        // resulting in a horizontal  bullet trajectory
+        targetUnitShootAtPosition.y = _shootPointTransform.position.y;
+
+        bulletProjectile.Setup(targetUnitShootAtPosition);
     }
 
     private void MoveAction_OnStopMoving(object sender, EventArgs e)

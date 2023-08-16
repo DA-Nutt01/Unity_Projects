@@ -18,6 +18,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: UnitEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 6434673274359141619, guid: 09f047d5fb19ded4c9da23fa7f0f523c,
+        type: 3}
+      propertyPath: _bulletProjectilePrefab
+      value: 
+      objectReference: {fileID: 9119105720458832731, guid: 009419908d27e96429d00c1128a73a85,
+        type: 3}
     - target: {fileID: 7061583334740357030, guid: 09f047d5fb19ded4c9da23fa7f0f523c,
         type: 3}
       propertyPath: m_RootOrder
