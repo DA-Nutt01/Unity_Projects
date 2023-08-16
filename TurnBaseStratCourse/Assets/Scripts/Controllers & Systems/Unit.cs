@@ -18,7 +18,7 @@ public class Unit : MonoBehaviour
     private HealthSystem _healthSystem;
     [SerializeField, Tooltip("The max action points this unit has per round")] 
     private int _maxActionPoints = 2;
-    private int _currentActionPoints;       // The number of actions this unit can take per turn
+    [SerializeField] private int _currentActionPoints;       // The number of actions this unit can take per turn
     [SerializeField] private bool _isEnemy; // Flag for defining enemies
 
     private void Awake()
@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour
         LevelGrid.Instance.AddUnitAtGridPosition(_currentGridPosition, this);           // Set the current position of this unit in it's current GridPosition
 
         TurnSystem.Instance.OnRoundChange += TurnSystem_OnRoundChange;                  // Subscribe to event to update this unit's action points at the start of the round
-        _healthSystem.onDeath += HealthSystem_OnDeath;
+        _healthSystem.OnDeath += HealthSystem_OnDeath;
     }
 
     void Update()
@@ -115,9 +115,8 @@ public class Unit : MonoBehaviour
     {
         if ((!_isEnemy && TurnSystem.Instance.IsPlayerTurn()) || (_isEnemy && !TurnSystem.Instance.IsPlayerTurn()))
         {
-            OnAnyActionPointChange?.Invoke(this, EventArgs.Empty); // Fire event
-
             _currentActionPoints = _maxActionPoints; // When a new rounds starts, reset the Action Points of this unit only if it is on the side that is currently its turn
+            OnAnyActionPointChange?.Invoke(this, EventArgs.Empty); // Fire event
         }
     }
 
