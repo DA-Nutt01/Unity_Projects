@@ -21,8 +21,10 @@ public class SpinAction : BaseAction
     }
     public override void TakeAction(GridPosition gridPosition, Action OnActionComplete) // This method takes in a delegate as a parameter; When calling Spin, it now needs a function to store that it will call once it is complete
     {
-        ActionStart(OnActionComplete);
         _totalSpinAmount = 0; 
+
+        // For execution order purposes, make sure ActionStart() is called after initial setup of this action
+        ActionStart(OnActionComplete);
     }
 
     public override string GetActionName()

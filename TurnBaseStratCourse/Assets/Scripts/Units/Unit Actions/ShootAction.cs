@@ -132,12 +132,20 @@ public class ShootAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        ActionStart(onActionComplete);
+        
         _targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
 
         _state = State.Aiming;
         float aimStateTime = 1f; // The amount of time spent in this state
         _stateTimer = aimStateTime;
         _canShoot = true;
+
+        // For execution order purposes, make sure ActionStart() is called after initial setup of this action
+        ActionStart(onActionComplete);
+    }
+
+    public Unit GetTargetUnit()
+    {
+        return _targetUnit;
     }
 }
