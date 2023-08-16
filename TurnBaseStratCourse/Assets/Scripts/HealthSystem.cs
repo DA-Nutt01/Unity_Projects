@@ -9,7 +9,7 @@ public class HealthSystem : MonoBehaviour
     public void TakeDamage(int dmgAmount)
     {
         _health -= dmgAmount;
-        Debug.Log(_health);
+        
         // Prevent health from falling below 0
         if (_health < 0) _health = 0;
         if (_health == 0) Die();
