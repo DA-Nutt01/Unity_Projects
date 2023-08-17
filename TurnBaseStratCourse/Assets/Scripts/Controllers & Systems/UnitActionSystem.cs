@@ -57,18 +57,20 @@ public class UnitActionSystem : MonoBehaviour
     {
         if (Input.GetMouseButton(0)) // Left Click
         {
-            GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); // Convert the mouse position into a GridPositon
+            // Convert the mouse position into a GridPositon & cache it
+            GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseController.GetMousePosition()); 
 
-            if (_selectedAction.IsValidActionGridPosition(mouseGridPosition))        // If the GridPosition is valid for the selected action
-            {   
-                if (_selectedUnit.TrySpendActionPointsToTakeAction(_selectedAction)) // IF Ap succesfully spent on this action
-                {
-                    SetBusy();
-                    _selectedAction.TakeAction(mouseGridPosition, ClearBusy);        // Call the action
+            // If the GridPosition is NOT valid for the selected action
+            if (!_selectedAction.IsValidActionGridPosition(mouseGridPosition)) return;       
+               
+                // IF Ap UNsuccesfully spent on this action
+            if (!_selectedUnit.TrySpendActionPointsToTakeAction(_selectedAction)) return;
 
-                    OnActionStarted?.Invoke(this, EventArgs.Empty);                  // Fire this event if there are any subscribers
-                }
-            }
+            // Once the action clears all checks, actually execute the action & fire events 
+            SetBusy();
+            _selectedAction.TakeAction(mouseGridPosition, ClearBusy);      
+
+            OnActionStarted?.Invoke(this, EventArgs.Empty);                 
         }
     }
 

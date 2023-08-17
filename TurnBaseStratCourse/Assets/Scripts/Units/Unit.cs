@@ -9,6 +9,8 @@ public class Unit : MonoBehaviour
     // An instance of this script sits on each and every unit
 
     public static event EventHandler OnAnyActionPointChange; // Event for when the action point changes on any unit
+    public static event EventHandler OnAnyUnitSpawned;
+    public static event EventHandler OnAnyUnitDeath;
 
     [SerializeField, Tooltip("READONLY: The current GridPosition this unit is occupying")]
     private GridPosition _currentGridPosition; 
@@ -16,7 +18,7 @@ public class Unit : MonoBehaviour
     private MoveAction   _moveAction;       // Reference to MoveAction script component
     private SpinAction   _spinAction;       // Reference to MoveAction script component
     private HealthSystem _healthSystem;
-    [SerializeField, Tooltip("The max action points this unit has per round")] 
+    [SerializeField, Tooltip("READONLY: The max action points this unit has per round")] 
     private int _maxActionPoints = 2;
     [SerializeField] private int _currentActionPoints;       // The number of actions this unit can take per turn
     [SerializeField] private bool _isEnemy; // Flag for defining enemies
@@ -36,6 +38,8 @@ public class Unit : MonoBehaviour
 
         TurnSystem.Instance.OnRoundChange += TurnSystem_OnRoundChange;                  // Subscribe to event to update this unit's action points at the start of the round
         _healthSystem.OnDeath += HealthSystem_OnDeath;
+
+        OnAnyUnitSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     void Update()
@@ -129,6 +133,8 @@ public class Unit : MonoBehaviour
         // Remove this unit from the GridSystem on death
         LevelGrid.Instance.RemoveUnitAtGridPosition(_currentGridPosition, this);
         Destroy(gameObject);
+
+        OnAnyUnitDeath?.Invoke(this, EventArgs.Empty);
     }
 
     public void TakeDamage(int dmgAmount)
