@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System; 
 using UnityEngine;
 
 public class LevelGrid : MonoBehaviour
@@ -8,6 +9,8 @@ public class LevelGrid : MonoBehaviour
 
     // This Class is responsible for utilizing the GridSystem class to generate the playable level 
     public static LevelGrid Instance {get; private set;} // Public attribute to allow external classes to read from this class but not write to it (Singleton)
+
+    public event EventHandler OnAnyUnitMovedGridPosition;
 
     [SerializeField, Tooltip("Reference to Degbug object for Grid Objects")]
     private Transform _gridDebugObjectPrefab;
@@ -83,6 +86,7 @@ public class LevelGrid : MonoBehaviour
     {
         // Takes in a Unit, the GridPosition it is currently leaving, & the GridPosition it is arriving to & changes the unit's interna; GridPosition
         RemoveUnitAtGridPosition(fromGridPosition, movingUnit);         // Clear the Unit from the starting GridPosition
-        AddUnitAtGridPosition(toGridPosition, movingUnit); // Add the Unit to the new GridPosition
+        AddUnitAtGridPosition(toGridPosition, movingUnit); // Add the Unit to the new 
+        OnAnyUnitMovedGridPosition?.Invoke(this, EventArgs.Empty); // Raise the event if it has at least 1 observer 
     }
 }
